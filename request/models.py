@@ -19,6 +19,7 @@ except ImportError:
         return User
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+OAUTH_CLIENT_MODEL = getattr(settings, 'OAUTH_CLIENT_MODEL', 'oauth2.Client')
 
 
 @python_2_unicode_compatible
@@ -41,6 +42,7 @@ class Request(models.Model):
     # User infomation
     ip = models.GenericIPAddressField(_('ip address'))
     user = models.ForeignKey(AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('user'))
+    client = models.ForeignKey(OAUTH_CLIENT_MODEL, blank=True, null=True, verbose_name=_('client'))
     referer = models.URLField(_('referer'), max_length=255, blank=True, null=True)
     user_agent = models.CharField(_('user agent'), max_length=255, blank=True, null=True)
     language = models.CharField(_('language'), max_length=255, blank=True, null=True)
@@ -76,6 +78,11 @@ class Request(models.Model):
         if hasattr(request, 'user'):
             if request.user.is_authenticated():
                 self.user = request.user
+
+        if hasattr(request, 'auth_client'):
+                self.client = request.auth_client
+        elif hasattr(request, 'auth_client_id'):
+                self.client_id = request.auth_client_id
 
         if response:
             self.response = response.status_code
