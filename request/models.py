@@ -81,8 +81,6 @@ class Request(models.Model):
 
         if hasattr(request, 'auth_client'):
                 self.client = request.auth_client
-        elif hasattr(request, 'auth_client_id'):
-                self.client_id = request.auth_client_id
 
         if response:
             self.response = response.status_code
